@@ -39,6 +39,8 @@ INSTALLED_APPS = [
 
     #Installed apps
     'sms_management',
+
+    "rest_framework",
 ]
 
 MIDDLEWARE = [
