@@ -3,9 +3,9 @@ from django.shortcuts import render,redirect
 from django.contrib.auth.models import User, Group, Permission
 from django.contrib import messages
 from django.contrib.auth import login
-from .forms import CustomerInformationForm, MessageTemplateForm, TemplateSubmissionForm, UserRegistrationForm
 from django.contrib.auth.decorators import permission_required, login_required
 from .models import TemplateSubmission, Approval, CustomerInformation, Message, TemplateSubmission
+from .forms import CustomerInformationForm, MessageTemplateForm, TemplateSubmissionForm, UserRegistrationForm
 
 
 def assign_approval_role(request, user_id, approval_permission):
@@ -36,7 +36,7 @@ def register_user(request):
     else:
         form = UserRegistrationForm()
 
-    return render(request, 'registration/register.html', {'form': form})
+    return render(request, 'auth/register.html', {'form': form})
 
 @login_required
 def create_customer_information(request):
@@ -48,7 +48,7 @@ def create_customer_information(request):
     else:
         form = CustomerInformationForm()
     
-    return render(request, 'create_customer_information.html', {'form': form})
+    return render(request, 'customer_infor.html', {'form': form})
 
 @login_required
 def create_message_template(request, customer_information_id):
@@ -63,27 +63,33 @@ def create_message_template(request, customer_information_id):
     else:
         form = MessageTemplateForm()
     
-    return render(request, 'create_message_template.html', {'form': form, 'customer_information': customer_information})
+    return render(request, 'message_template.html', {'form': form, 'customer_information': customer_information})
 
 @login_required
 def submit_message_for_approval(request, template_submission_id):
+    """
+    This view function allows a logged-in user to submit a message for approval.
+    The function takes a request object and a template_submission_id as parameters.
+    If the template submission is not found, it returns an HttpResponse with an error message.
+    If the request method is POST, it handles the form submission for message approval.
+    If the form is valid, it saves the form and redirects to the message list page.
+    If the request method is GET, it renders the submit_message_for_approval.html template with the form and template submission.
+    """
     try:
         template_submission = TemplateSubmission.objects.get(pk=template_submission_id)
     except TemplateSubmission.DoesNotExist:
         return HttpResponse("Template submission not found.")
     
     if request.method == 'POST':
-        # Handle form submission for message approval
         form = TemplateSubmissionForm(request.POST, instance=template_submission)
         if form.is_valid():
             form.save()
-            # Notify admin or designated users for approval
             messages.success(request, "Message submitted for approval.")
             return redirect('message_list')
     else:
         form = TemplateSubmissionForm(instance=template_submission)
     
-    return render(request, 'submit_message_for_approval.html', {'form': form, 'template_submission': template_submission})
+    return render(request, 'approval.html', {'form': form, 'template_submission': template_submission})
 
 @permission_required('can_approve_template', raise_exception=True)
 def approve_message(request, template_submission_id):

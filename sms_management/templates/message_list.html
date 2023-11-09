@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Approved Messages</h2>
+<ul>
+  {% for message in approved_messages %}
+    <li>{{ message.subject }}</li>
+  {% endfor %}
+</ul>
+{% endblock %}

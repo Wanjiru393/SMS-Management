@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Submit Message for Approval</h2>
+<p>Customer Information: {{ template_submission.template.name }}</p>
+<form method="post">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit">Submit for Approval</button>
+</form>
+{% endblock %}

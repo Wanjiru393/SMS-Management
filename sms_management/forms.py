@@ -10,7 +10,7 @@ class UserRegistrationForm(UserCreationForm):
 class CustomerInformationForm(forms.ModelForm):
     class Meta:
         model = CustomerInformation
-        fields = ['full_name', 'contact_number', 'email', 'address', 'meter_number', 'service_type']
+        fields = ['full_name', 'contact', 'acc_number']
 
 class MessageTemplateForm(forms.ModelForm):
     class Meta:
