@@ -2,10 +2,12 @@ from django.http import HttpResponse
 from django.shortcuts import render,redirect
 from django.contrib.auth.models import User, Group, Permission
 from django.contrib import messages
-from django.contrib.auth import login
+from django.contrib.auth import login, authenticate
+from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import permission_required, login_required
-from .models import TemplateSubmission, Approval, CustomerInformation, Message, TemplateSubmission
+from .models import MessageTemplate, TemplateSubmission, CustomerInformation, Message, TemplateSubmission, BulkSMS, Approval, UserProfile
 from .forms import CustomerInformationForm, MessageTemplateForm, TemplateSubmissionForm, UserRegistrationForm
+from django.shortcuts import get_object_or_404
 
 
 def assign_approval_role(request, user_id, approval_permission):
@@ -13,30 +15,81 @@ def assign_approval_role(request, user_id, approval_permission):
 
     if approval_permission == 'can_approve':
         group = Group.objects.get(name='Can Approve')
-        permission = Permission.objects.get(codename='can_approve_template')
     elif approval_permission == 'cannot_approve':
         group = Group.objects.get(name='Cannot Approve')
-        permission = Permission.objects.get(codename='cannot_approve_template')
     else:
         return HttpResponse("Invalid permission assignment.")
 
     user.groups.add(group)
-    user.user_permissions.add(permission)
 
-    messages.success(request, f"Role and permission assigned to {user.username} successfully.")
+    messages.success(request, f"Role assigned to {user.username} successfully.")
     return redirect('admin-user-list')
+
+from django.contrib.auth.models import User
 
 def register_user(request):
     if request.method == 'POST':
         form = UserRegistrationForm(request.POST)
         if form.is_valid():
+            username = form.cleaned_data['username']
+            if User.objects.filter(username=username).exists():
+                messages.error(request, "Username already exists. Please choose a different username.")
+                return redirect('register_user')
             user = form.save()
-            login(request, user) 
-            return redirect('home')
+
+            # Create a UserProfile 
+            UserProfile.objects.get_or_create(user=user, full_name=form.cleaned_data['full_name'],
+                                              staff_number=form.cleaned_data['staff_number'],
+                                              department=form.cleaned_data['department'],
+                                              station=form.cleaned_data['station'])
+
+            return redirect('login')
     else:
         form = UserRegistrationForm()
 
     return render(request, 'auth/register.html', {'form': form})
+
+
+def login_view(request):
+    if request.method == 'POST':
+        form = AuthenticationForm(request, data=request.POST)
+        if form.is_valid():
+            username = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password')
+            user = authenticate(request, username=username, password=password)
+            if user is not None:
+                login(request, user)
+                messages.info(request, f"You are now logged in as {username}.")
+                return redirect('dashboard')
+            else:
+                messages.error(request, "Invalid username or password.")
+        else:
+            messages.error(request, "Invalid username or password.")
+    else:
+        form = AuthenticationForm()
+    
+    return render(request=request, template_name="auth/login.html", context={"login_form": form})
+
+
+def dashboard(request):
+    pending_count = TemplateSubmission.objects.filter(status='pending').count()
+    approved_count = TemplateSubmission.objects.filter(status='approved').count()
+
+    # Get message templates
+    message_templates = MessageTemplate.objects.all()
+
+    # Get message history
+    message_history = BulkSMS.objects.all()
+
+    context = {
+        'pending_count': pending_count,
+        'approved_count': approved_count,
+        'message_templates': message_templates,
+        'message_history': message_history,
+    }
+
+    return render(request, 'dashboard.html', context)
+
 
 @login_required
 def create_customer_information(request):
@@ -58,7 +111,8 @@ def create_message_template(request, customer_information_id):
         form = MessageTemplateForm(request.POST)
         if form.is_valid():
             message_template = form.save()
-            template_submission = TemplateSubmission.objects.create(template=message_template, user=request.user)
+            template_submission = TemplateSubmission(template=message_template, user=request.user)
+            template_submission.save()
             return redirect('submit_message_for_approval', template_submission_id=template_submission.id)
     else:
         form = MessageTemplateForm()
@@ -67,14 +121,6 @@ def create_message_template(request, customer_information_id):
 
 @login_required
 def submit_message_for_approval(request, template_submission_id):
-    """
-    This view function allows a logged-in user to submit a message for approval.
-    The function takes a request object and a template_submission_id as parameters.
-    If the template submission is not found, it returns an HttpResponse with an error message.
-    If the request method is POST, it handles the form submission for message approval.
-    If the form is valid, it saves the form and redirects to the message list page.
-    If the request method is GET, it renders the submit_message_for_approval.html template with the form and template submission.
-    """
     try:
         template_submission = TemplateSubmission.objects.get(pk=template_submission_id)
     except TemplateSubmission.DoesNotExist:

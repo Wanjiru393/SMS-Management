@@ -1,11 +1,14 @@
 from django.contrib import admin
-from .models import UserProfile, UserRegistration, CustomerInformation, MessageTemplate, TemplateSubmission, Approval, Message
+from .models import UserProfile,CustomerInformation, MessageTemplate, TemplateSubmission, Message, BulkSMS, Approval
 
-# Register your models here
+
 admin.site.register(UserProfile)
-admin.site.register(UserRegistration)
 admin.site.register(CustomerInformation)
 admin.site.register(MessageTemplate)
 admin.site.register(TemplateSubmission)
-admin.site.register(Approval)
 admin.site.register(Message)
+admin.site.register(BulkSMS)
+admin.site.register(Approval)
+
+
+

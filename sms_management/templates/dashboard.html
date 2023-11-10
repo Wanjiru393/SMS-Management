@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+{% block head %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/styles.css' %}">
+{% endblock %}
+
+{% block content %}
+    <h1>Welcome to the Dashboard</h1>
+
+    <div>
+        <h2>Message Approval Status</h2>
+        <p>Pending Messages: {{ pending_count }}</p>
+        <p>Approved Messages: {{ approved_count }}</p>
+    </div>
+
+    <div>
+        <h2>Message Templates</h2>
+        <ul>
+            {% for template in message_templates %}
+                <li>{{ template.name }} - {{ template.content }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <div>
+        <h2>Message History</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Messages</th>
+                    <th>Mobile</th>
+                    <th>Create Date</th>
+                    <th>Date Sent</th>
+                    <th>User ID</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for message in message_history %}
+                    <tr>
+                        <td>{{ message.sms_id }}</td>
+                        <td>{{ message.messages }}</td>
+                        <td>{{ message.mobile }}</td>
+                        <td>{{ message.create_date }}</td>
+                        <td>{{ message.date_sent }}</td>
+                        <td>{{ message.user_id }}</td>
+                        <td>{{ message.description }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}
