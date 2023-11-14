@@ -1,0 +1,85 @@
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+body {
+    background: #F0EBE3;
+    margin-top: 5rem;
+    height: 100vh;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    color: #003366;
+  }
+.navbar {
+    background-color: #003366;
+    padding: 0.5rem 1rem;
+}
+
+.navbar-brand {
+    color: #fff;
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.navbar-toggler {
+    border-color: #fff;
+}
+
+.navbar-toggler-icon {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(255, 255, 255, 1)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+}
+
+.navbar-nav {
+    margin-left: auto;
+}
+
+.nav-item {
+    margin-left: 1rem;
+}
+
+.nav-link {
+    color: yellow;
+    font-size: 1.2rem;
+}
+
+.nav-link:hover {
+    color: #35858B;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+th {
+    background-color: #003366;
+    color: #fff;
+}
+
+.footer {
+    background-color: #003366;
+    padding: 100px 0;
+    color: #fff;
+    text-align: center;
+}
+
+.footer-row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.footer-copyright {
+    text-align: center;
+    padding: 20px;
+    background-color: #002244;
+    color: #fff;
+}

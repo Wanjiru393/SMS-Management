@@ -31,43 +31,41 @@ def register_user(request):
     if request.method == 'POST':
         form = UserRegistrationForm(request.POST)
         if form.is_valid():
-            username = form.cleaned_data['username']
-            if User.objects.filter(username=username).exists():
-                messages.error(request, "Username already exists. Please choose a different username.")
+            staff_number = form.cleaned_data['staff_number']
+            if User.objects.filter(username=staff_number).exists():
+                messages.error(request, "Staff number already exists. Please choose a different staff number.")
                 return redirect('register_user')
             user = form.save()
-
-            # Create a UserProfile 
             UserProfile.objects.get_or_create(user=user, full_name=form.cleaned_data['full_name'],
                                               staff_number=form.cleaned_data['staff_number'],
                                               department=form.cleaned_data['department'],
                                               station=form.cleaned_data['station'])
 
-            return redirect('login')
+            login(request, user)
+            messages.success(request, f"Registration successful. You are now logged in as {staff_number}.")
+            return redirect('dashboard')
     else:
         form = UserRegistrationForm()
 
     return render(request, 'auth/register.html', {'form': form})
 
-
 def login_view(request):
     if request.method == 'POST':
         form = AuthenticationForm(request, data=request.POST)
         if form.is_valid():
-            username = form.cleaned_data.get('username')
+            staff_number = form.cleaned_data.get('username') 
             password = form.cleaned_data.get('password')
-            user = authenticate(request, username=username, password=password)
+            user = authenticate(request, staff_number=staff_number, password=password)
             if user is not None:
                 login(request, user)
-                messages.info(request, f"You are now logged in as {username}.")
+                messages.info(request, f"You are now logged in as {staff_number}.")
                 return redirect('dashboard')
             else:
-                messages.error(request, "Invalid username or password.")
+                messages.error(request, "Invalid staff_number or password.")
         else:
-            messages.error(request, "Invalid username or password.")
+            messages.error(request, "Invalid staff_number or password.")
     else:
         form = AuthenticationForm()
-    
     return render(request=request, template_name="auth/login.html", context={"login_form": form})
 
 

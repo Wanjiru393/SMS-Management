@@ -1,10 +1,16 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
   <h2>Login</h2>
-  <form method="post">
+  <form method="post" class="form-signin">
     {% csrf_token %}
-    {{ login_form.as_p }}
+    {{ login_form.username.label_tag }}
+    {{ login_form.username }}
+    <br>
+    {{ login_form.password.label_tag }}
+    {{ login_form.password }}
+    <br>
     <button type="submit">Login</button>
   </form>
 {% endblock %}

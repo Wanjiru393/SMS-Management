@@ -1,8 +1,6 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from .models import UserProfile, CustomerInformation, MessageTemplate, TemplateSubmission
-from django.contrib.auth.views import LoginView
-from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.models import User
 
 class UserRegistrationForm(UserCreationForm):
@@ -13,7 +11,7 @@ class UserRegistrationForm(UserCreationForm):
 
     class Meta:
         model = User
-        fields = ['username', 'full_name', 'staff_number', 'department', 'station', 'password1', 'password2']
+        fields = ['staff_number', 'full_name', 'department', 'station', 'password1', 'password2']
 
     def save(self, commit=True):
         user = super().save(commit=False)

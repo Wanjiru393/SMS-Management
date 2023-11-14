@@ -3,9 +3,9 @@ from django.contrib.auth.views import LoginView, LogoutView, PasswordResetView, 
 from . import views
 
 urlpatterns = [
-  path('', views.register_user, name='register_user'),
+  # path('', views.register_user, name='register_user'),
      path('login/', views.login_view, name='login'),
-     path('dashboard/', views.dashboard, name='dashboard'),
+     path('', views.dashboard, name='dashboard'),
     path('assign_approval_role/<int:user_id>/<str:approval_permission>/', views.assign_approval_role, name='assign_approval_role'),
     path('create-customer-information/', views.create_customer_information, name='create_customer_information'),
     path('create-message-template/<int:customer_information_id>/', views.create_message_template, name='create_message_template'),
