@@ -6,24 +6,13 @@
 {% endblock %}
 
 {% block content %}
-<div class="container my-4">
-    <div class="container my-4">
-        <h1>Dashboard</h1>
+<div class="container padd-15">
+    <div class="container padd-15">
         <div>
-            <h2>Message Approval Status</h2>
+            <h2>Approval Status</h2>
             <p>Pending Messages: {{ pending_count }}</p>
             <p>Approved Messages: {{ approved_count }}</p>
         </div>
-
-        <div>
-            <h2>Message Templates</h2>
-            <ul>
-                {% for template in message_templates %}
-                    <li>{{ template.name }} - {{ template.content }}</li>
-                {% endfor %}
-            </ul>
-        </div>
-
         <div>
             <h2>Message History</h2>
             <table>

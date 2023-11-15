@@ -15,21 +15,18 @@ class UserRegistrationForm(UserCreationForm):
 
     def save(self, commit=True):
         user = super().save(commit=False)
-        user_profile = UserProfile(user=user, full_name=self.cleaned_data['full_name'], staff_number=self.cleaned_data['staff_number'], department=self.cleaned_data['department'], station=self.cleaned_data['station'])
+        user.username = self.cleaned_data['staff_number']
         if commit:
             user.save()
-            user_profile.save()
         return user
-
-class CustomerInformationForm(forms.ModelForm):
-    class Meta:
-        model = CustomerInformation
-        fields = ['full_name', 'contact', 'acc_number']
+    
+class CustomerInformationForm(forms.Form):
+    csv_file = forms.FileField()
 
 class MessageTemplateForm(forms.ModelForm):
     class Meta:
         model = MessageTemplate
-        fields = ['name', 'content']
+        fields = ['name', 'content', 'issue_type']
 
 class TemplateSubmissionForm(forms.ModelForm):
     class Meta:

@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container padd-15 mt-3">
+    <h4>Message For: {{ customer.full_name }}</h4>
+  <br>
+    <form method="post">
+      {% csrf_token %}
+      <label for="template">Template:</label>
+      <select name="template" id="template">
+        {% for template in available_templates %}
+          <option value="{{ template.id }}" data-content="{{ template.content }}">{{ template.name }}</option>
+        {% endfor %}
+      </select>
+      <label for="message_content">Message:</label>
+      <textarea name="message_content" id="message_content" rows="5" cols="50">{{ message_content }}</textarea>
+      <input type="submit" value="Create Message">
+    </form>
+</div>
+</br>
+<table>
+  <tr>
+    <th>SMS ID</th>
+    <th>Create Date</th>
+    <th>Mobile</th>
+    <th>Content</th>
+  </tr>
+  {% if bulk_sms %}
+  <tr>
+    <td>{{ bulk_sms.sms_id }}</td>
+    <td>{{ bulk_sms.create_date }}</td>
+    <td>{{ bulk_sms.mobile }}</td>
+    <td>{{ bulk_sms.messages }}</td>
+  </tr>
+  {% endif %}
+</table>
+<script>
+  document.getElementById('template').addEventListener('change', function() {
+      var selectedTemplateContent = this.options[this.selectedIndex].getAttribute('data-content');
+      var customerName = "{{ customer.full_name }}";
+      var amount = "...";
+      var paymentMethod = "...";
+      var accountNumber = "{{ customer.acc_number }}";
+
+      var formattedContent = selectedTemplateContent
+          .replace('{customer_name}', customerName)
+          .replace('{amount}', amount)
+          .replace('{payment_method}', paymentMethod)
+          .replace('{account_number}', accountNumber);
+
+      document.getElementById('message_content').value = formattedContent;
+  });
+</script>
+{% endblock %}
+
+

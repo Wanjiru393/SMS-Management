@@ -2,27 +2,28 @@
 {% load static %}
 
 {% block content %}
-<h2>Register User</h2>
-<form method="post">
-  {% csrf_token %}
-    {{ form.staff_number.label_tag }}
-    {{ form.staff_number }}
-    <br>
-    {{ form.full_name.label_tag }}
-    {{ form.full_name }}
-    <br>
-    {{ form.department.label_tag }}
-    {{ form.department }}
-    <br>
-    {{ form.station.label_tag }}
-    {{ form.station }}
-    <br>
-    {{ form.password1.label_tag }}
-    {{ form.password1 }}
-    <br>
-    {{ form.password2.label_tag }}
-    {{ form.password2 }}
-    <br>
-  <button type="submit">Register</button>
-</form>
+  <h2>Register User</h2>
+  <form method="post">
+    {% csrf_token %}
+      {{ form.staff_number.label_tag }}
+      {{ form.staff_number }}
+      <br>
+      {{ form.full_name.label_tag }}
+      {{ form.full_name }}
+      <br>
+      {{ form.department.label_tag }}
+      {{ form.department }}
+      <br>
+      {{ form.station.label_tag }}
+      {{ form.station }}
+      <br>
+      {{ form.password1.label_tag }}
+      {{ form.password1 }}
+      <br>
+      {{ form.password2.label_tag }}
+      {{ form.password2 }}
+      <br>
+    <button type="submit">Register</button>
+  </form>
+  <p>Already have an account? <a href="{% url 'login' %}">Login here</a></p>
 {% endblock %}

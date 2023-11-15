@@ -1,7 +1,5 @@
-import re
 from django.db import models
 from django.contrib.auth.models import User
-from django.core.exceptions import ValidationError
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
@@ -13,12 +11,15 @@ class UserProfile(models.Model):
     station = models.CharField(max_length=100)
 
     @receiver(post_save, sender=User)
-    def create_user_profile(sender, instance, created, **kwargs):
+    def create_or_update_user_profile(sender, instance, created, **kwargs):
         if created:
             UserProfile.objects.create(user=instance)
+        else:
+            instance.userprofile.save()
 
     @receiver(post_save, sender=User)
     def save_user_profile(sender, instance, **kwargs):
+        print("Saving user profile for:", instance)
         instance.userprofile.save()
 
 class CustomerInformation(models.Model):
@@ -63,6 +64,7 @@ class Message(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
     submission = models.ForeignKey(TemplateSubmission, on_delete=models.CASCADE)
     bulk_sms = models.ForeignKey(BulkSMS, on_delete=models.CASCADE)
+    issue_type = models.CharField(max_length=100) 
 
 class Approval(models.Model):
     submission = models.ForeignKey(TemplateSubmission, on_delete=models.CASCADE)

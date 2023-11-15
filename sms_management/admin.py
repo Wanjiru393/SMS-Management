@@ -9,6 +9,3 @@ admin.site.register(TemplateSubmission)
 admin.site.register(Message)
 admin.site.register(BulkSMS)
 admin.site.register(Approval)
-
-
-

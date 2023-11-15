@@ -5,7 +5,7 @@ class StaffNumberBackend(ModelBackend):
     def authenticate(self, request, staff_number=None, password=None, **kwargs):
         UserModel = get_user_model()
         try:
-            user = UserModel.objects.get(userprofile__staff_number=staff_number)
+            user = UserModel.objects.get(username=staff_number)
             if user.check_password(password):
                 return user
         except UserModel.DoesNotExist:

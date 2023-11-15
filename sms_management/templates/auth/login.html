@@ -1,16 +1,17 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 {% load static %}
 
 {% block content %}
   <h2>Login</h2>
-  <form method="post" class="form-signin">
+  <form method="post">
     {% csrf_token %}
-    {{ login_form.username.label_tag }}
-    {{ login_form.username }}
-    <br>
-    {{ login_form.password.label_tag }}
-    {{ login_form.password }}
-    <br>
+      {{ login_form.username.label_tag }}
+      {{ login_form.username }}
+      <br>
+      {{ login_form.password.label_tag }}
+      {{ login_form.password }}
+      <br>
     <button type="submit">Login</button>
   </form>
+  <p>Don't have an account? <a href="{% url 'register_user' %}">Register here</a></p>
 {% endblock %}

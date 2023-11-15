@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block head %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/styles.css' %}">
+{% endblock %}
+
+
+{% block content %}
+
+{% if form %}
+<h2>{% if form.instance.id %}Edit{% else %}Create{% endif %} Template</h2>
+
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary">{% if form.instance.id %}Update{% else %}Create{% endif %} Template</button>
+</form>
+{% endif %}
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>Issue Type</th>
+      <th>Template</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for template in templates %}
+  <tr>
+    <td>{{ template.issue_type }}</td>
+    <td>{{ template.content }}</td>
+    <td>
+      <a href="{% url 'edit_template' template.id %}">Edit</a> |
+      <form method="post" action="{% url 'delete_template' template.id %}" style="display: inline;">
+        {% csrf_token %}
+        <input type="submit" value="Delete">
+      </form>
+    </td>
+  </tr>
+{% empty %}
+  <tr>
+    <td colspan="3">No templates found.</td>
+  </tr>
+{% endfor %}
+  </tbody>
+</table>
+{% endblock %}

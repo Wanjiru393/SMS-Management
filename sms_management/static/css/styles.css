@@ -7,19 +7,19 @@ body {
     background: #F0EBE3;
     margin-top: 5rem;
     height: 100vh;
+    font-family: Arial, sans-serif;
   }
+
   h1, h2, h3, h4, h5, h6 {
     color: #003366;
-  }
+}
 .navbar {
     background-color: #003366;
-    padding: 0.5rem 1rem;
+    color: #fff;
 }
 
 .navbar-brand {
     color: #fff;
-    font-size: 1.5rem;
-    font-weight: bold;
 }
 
 .navbar-toggler {
@@ -27,26 +27,24 @@ body {
 }
 
 .navbar-toggler-icon {
-    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(255, 255, 255, 1)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3E%3Cpath stroke='rgba(255, 255, 255)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
 }
 
 .navbar-nav {
     margin-left: auto;
 }
 
-.nav-item {
-    margin-left: 1rem;
-}
-
 .nav-link {
-    color: yellow;
-    font-size: 1.2rem;
+    color: #fff;
 }
 
 .nav-link:hover {
-    color: #35858B;
+    color: #ccc;
 }
 
+.nav-link.active {
+    color: #ccc;
+}
 table {
     width: 100%;
     border-collapse: collapse;
@@ -62,6 +60,18 @@ th, td {
 th {
     background-color: #003366;
     color: #fff;
+}
+.btn {
+    background-color: #003366;
+    color: #fff;
+    padding: 10px 20px;
+    text-decoration: none;
+    border: none;
+    border-radius: 5px;
+}
+
+.btn:hover {
+    background-color: #002244;
 }
 
 .footer {
