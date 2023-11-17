@@ -32,41 +32,43 @@ class MessageTemplate(models.Model):
     content = models.TextField()
     issue_type = models.CharField(max_length=100)
 
-class TemplateSubmission(models.Model):
+class MessageSubmission(models.Model):   #message created from a template and awaiting approval.
     template = models.ForeignKey(MessageTemplate, on_delete=models.CASCADE)
+    edited_template = models.TextField(null=True, blank=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    customer = models.ForeignKey(CustomerInformation, on_delete=models.CASCADE)
+    issue = models.CharField(max_length=200, null=True, blank=True)
     submission_date = models.DateTimeField(auto_now_add=True)
     status = models.CharField(max_length=20, default='pending')
 
     class Meta:
         permissions = [
-            ("can_approve_template", "Can Approve Template Submissions"),
-            ("cannot_approve_template", "Cannot Approve Template Submissions"),
+            ("can_approve_message", "Can Approve message Submissions"),
+            ("cannot_approve_message", "Cannot Approve message Submissions"),
         ]
 
-class BulkSMS(models.Model):
+class BulkSMS(models.Model):   #approved message that is ready to be sent
     sms_id = models.AutoField(primary_key=True)
     messages = models.TextField()
     mobile = models.CharField(max_length=20)
     create_date = models.DateTimeField()
-    date_sent = models.DateTimeField()
+    date_sent = models.DateTimeField(null=True, blank=True)
+    description = models.CharField(max_length=200, null=True, blank=True)
     user_id = models.CharField(max_length=50)
-    description = models.CharField(max_length=200)
 
     class Meta:
         db_table = 'INCMS_INTER_ADMINIS.BULK_SMS'
 
-class Message(models.Model):
+class SentMessage(models.Model):   #a message that has been sent.
     sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name='sent_messages')
     recipient = models.ForeignKey(CustomerInformation, on_delete=models.CASCADE)
     subject = models.CharField(max_length=100)
     content = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True)
-    submission = models.ForeignKey(TemplateSubmission, on_delete=models.CASCADE)
-    bulk_sms = models.ForeignKey(BulkSMS, on_delete=models.CASCADE)
-    issue_type = models.CharField(max_length=100) 
+    submission = models.ForeignKey(MessageSubmission, on_delete=models.CASCADE)
+    issue_type = models.CharField(max_length=100)
 
-class Approval(models.Model):
-    submission = models.ForeignKey(TemplateSubmission, on_delete=models.CASCADE)
+class Approval(models.Model):   #approval of a MessageSubmission.
+    submission = models.ForeignKey(MessageSubmission, on_delete=models.CASCADE)
     approver = models.ForeignKey(User, on_delete=models.CASCADE)
     approval_date = models.DateTimeField(auto_now_add=True)

@@ -1,16 +1,15 @@
-import csv
-import datetime
 import io
+import csv
+from django.utils import timezone
 from django.http import HttpResponse
-from django.shortcuts import render,redirect
+from django.shortcuts import render,redirect, get_object_or_404
 from django.contrib.auth.models import User, Group
 from django.contrib import messages
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import permission_required, login_required
-from .models import MessageTemplate, TemplateSubmission, CustomerInformation, Message, TemplateSubmission, BulkSMS, Approval, UserProfile
-from .forms import CustomerInformationForm, MessageTemplateForm, TemplateSubmissionForm, UserRegistrationForm
-from django.shortcuts import get_object_or_404
+from .models import CustomerInformation, MessageTemplate, MessageSubmission, BulkSMS, UserProfile, Approval, User, SentMessage
+from .forms import MessageSubmissionForm, UserRegistrationForm, CustomerInformationForm, MessageTemplateForm
 
 
 def assign_approval_role(request, user_id, approval_permission):
@@ -83,10 +82,10 @@ def login_view(request):
 
 
 def home (request):
-    pending_count = TemplateSubmission.objects.filter(status='pending').count()
-    approved_count = TemplateSubmission.objects.filter(status='approved').count()
+    pending_count = MessageSubmission.objects.filter(status='pending').count()
+    approved_count = MessageSubmission.objects.filter(status='approved').count()
 
-    message_history = BulkSMS.objects.all()
+    message_history = SentMessage.objects.all()
 
     context = {
         'pending_count': pending_count,
@@ -98,7 +97,7 @@ def home (request):
 
 
 @login_required
-def  create_customer_information(request):
+def create_customer_information(request):
     records = CustomerInformation.objects.all()
     
     if request.method == 'POST':
@@ -169,100 +168,69 @@ def delete_template(request, template_id):
 def create_message(request, customer_id):
     customer = get_object_or_404(CustomerInformation, pk=customer_id)
     available_templates = MessageTemplate.objects.all()
-    message_content = ''
-    bulk_sms = None
-    
-
-    if not available_templates:
-        messages.error(request, "No templates available.")
-        return redirect('create_customer_information')
+    messages = MessageSubmission.objects.all()
 
     if request.method == 'POST':
-        form = TemplateSubmissionForm(request.POST)
-        if form.is_valid():
-            template_submission = form.save(commit=False)
-            template_submission.user = request.user
-            template_submission.status = 'pending' 
-            template_submission.save()
+        template_id = request.POST.get('template')
+        if not template_id:
+            return HttpResponse("No template ID provided.")
+        template = get_object_or_404(MessageTemplate, pk=template_id)
+        issue = request.POST.get('issue')
+        edited_template = request.POST.get('message_content')
 
-            message_content = template_submission.template.content.format(
-                customer_name=customer.full_name,
-                amount="...",
-                payment_method="...",
-                account_number=customer.acc_number
-            )
+        # Create MessageSubmission instance
+        submission, created = MessageSubmission.objects.get_or_create(
+            template=template, user=request.user,customer=customer, edited_template=edited_template, defaults={'status': 'pending'})
 
-            bulk_sms = BulkSMS.objects.create(
-                messages=message_content,
-                mobile=customer.contact,
-                create_date=datetime.now(),
-                user_id=request.user.username,
-            )
-
-            Message.objects.create(
-                sender=request.user,
-                recipient=customer,
-                content=message_content,
-                submission=template_submission,
-                bulk_sms=bulk_sms,
-                issue_type=template_submission.template.issue_type,
-            )
-
-            return redirect('customer_infor', customer_id=customer_id)
-        else:
-            print("Form errors:", form.errors) 
-            messages.error(request, "Invalid form data.")
-    else:
-        form = TemplateSubmissionForm()
-
-    return render(request, 'create_message.html', {
-        'customer': customer,
-        'form': form,
-        'available_templates': available_templates,
-        'message_content': message_content,
-        'bulk_sms': bulk_sms,
-    })
+    return render(request, 'create_message.html', {'customer': customer, 'available_templates': available_templates, 'messages':messages})
 
 
 @login_required
-def submit_message_for_approval(request, template_submission_id):
-    try:
-        template_submission = TemplateSubmission.objects.get(pk=template_submission_id)
-    except TemplateSubmission.DoesNotExist:
-        return HttpResponse("Template submission not found.")
-    
+def edit_submission(request, submission_id):
+    submission = get_object_or_404(MessageSubmission, pk=submission_id)
     if request.method == 'POST':
-        form = TemplateSubmissionForm(request.POST, instance=template_submission)
+        form = MessageSubmissionForm(request.POST, instance=submission)
         if form.is_valid():
             form.save()
-            messages.success(request, "Message submitted for approval.")
-            return redirect('message_list')
+            messages.success(request, "Submission updated successfully.")
+            return redirect('create_message', customer_id=submission.customer.id)
     else:
-        form = TemplateSubmissionForm(instance=template_submission)
-    
-    return render(request, 'approval.html', {'form': form, 'template_submission': template_submission})
-
-@permission_required('can_approve_template', raise_exception=True)
-def approve_message(request, template_submission_id):
-    try:
-        template_submission = TemplateSubmission.objects.get(pk=template_submission_id)
-    except TemplateSubmission.DoesNotExist:
-        return HttpResponse("Template submission not found.")
-    
-    if request.method == 'POST':
-        template_submission.approved = True
-        template_submission.save()
-        
-        # Create an approval record
-        Approval.objects.create(submission=template_submission, approver=request.user)
-        
-        messages.success(request, "Template submission approved successfully.")
-        return redirect('message_list')
-
-    return render(request, 'approve_message.html', {'template_submission': template_submission})
+        form = MessageSubmissionForm(instance=submission)
+    return render(request, 'create_message.html', {'form': form})
 
 @login_required
-def message_list(request):
-    # List messages that have been approved
-    approved_messages = Message.objects.filter(approved=True)
-    return render(request, 'message_list.html', {'approved_messages': approved_messages})
+def delete_submission(request, submission_id):
+    submission = get_object_or_404(MessageSubmission, pk=submission_id)
+    if request.method == 'POST':
+        submission.delete()
+        messages.success(request, "Submission deleted successfully.")
+        return redirect('create_message', customer_id=submission.customer.id)
+    return render(request, 'create_message.html', {'submission': submission})
+
+@login_required
+@permission_required('can_approve_message', raise_exception=True)
+def approve_submission(request, submission_id):
+    submission = get_object_or_404(MessageSubmission, pk=submission_id)
+    approver = request.user
+
+    # Create a new BulkSMS instance
+    bulk_sms = BulkSMS(
+        messages=submission.template.content,
+        mobile=submission.customer.contact,
+        user_id=approver.username,
+        description=submission.issue,
+        create_date=timezone.now()
+    )
+    bulk_sms.save()
+
+    # Create a new Approval instance
+    approval = Approval(
+        submission=submission,
+        approver=approver,
+        approval_date=timezone.now()
+    )
+    approval.save()
+
+    # Update the status of the submission
+    submission.status = 'approved'
+    submission.save()

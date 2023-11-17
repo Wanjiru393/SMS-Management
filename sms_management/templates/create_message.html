@@ -22,19 +22,31 @@
 <table>
   <tr>
     <th>SMS ID</th>
-    <th>Create Date</th>
+    <th>Message</th>
     <th>Mobile</th>
-    <th>Content</th>
+    <th>Description</th>
+    <th>Create Date</th>
+    <th>Approval Status</th>
+    <th>Actions</th>
   </tr>
-  {% if bulk_sms %}
+  {% for message in messages %}
   <tr>
-    <td>{{ bulk_sms.sms_id }}</td>
-    <td>{{ bulk_sms.create_date }}</td>
-    <td>{{ bulk_sms.mobile }}</td>
-    <td>{{ bulk_sms.messages }}</td>
+    <td>{{ message.id }}</td>
+    <td>{{ message.edited_template }}</td> 
+    <td>{{ message.customer.contact }}</td>
+    <td>{{ message.template.issue_type }}</td>
+    <td>{{ message.submission_date }}</td>
+    <td>{{ message.status }}</td>
+    <td>
+      <a href="{% url 'approve_submission' message.id %}">Approve</a> |
+      <a href="{% url 'edit_submission' message.id %}">Edit</a> |
+      <a href="{% url 'delete_submission' message.id %}">Delete</a>
+    </td>
   </tr>
-  {% endif %}
+  {% endfor %}
 </table>
+
+
 <script>
   document.getElementById('template').addEventListener('change', function() {
       var selectedTemplateContent = this.options[this.selectedIndex].getAttribute('data-content');

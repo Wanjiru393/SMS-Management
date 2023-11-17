@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
-from .models import UserProfile, CustomerInformation, MessageTemplate, TemplateSubmission
+from .models import MessageTemplate, MessageSubmission
 from django.contrib.auth.models import User
 
 class UserRegistrationForm(UserCreationForm):
@@ -28,8 +28,26 @@ class MessageTemplateForm(forms.ModelForm):
         model = MessageTemplate
         fields = ['name', 'content', 'issue_type']
 
-class TemplateSubmissionForm(forms.ModelForm):
+from django.contrib.auth import get_user_model
+User = get_user_model()
+
+class MessageSubmissionForm(forms.ModelForm):
+    edited_template = forms.CharField(widget=forms.Textarea)
+
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user', None)
+        super(MessageSubmissionForm, self).__init__(*args, **kwargs)
+
+    def save(self, commit=True):
+        instance = super(MessageSubmissionForm, self).save(commit=False)
+        instance.user = self.user
+        instance.status = 'pending'
+        instance.edited_template = self.cleaned_data.get('edited_template') 
+        if commit:
+            instance.save()
+        return instance
+
     class Meta:
-        model = TemplateSubmission
-        fields = ['template', 'user', 'status'] 
+        model = MessageSubmission
+        fields = ['template', 'edited_template']
 
