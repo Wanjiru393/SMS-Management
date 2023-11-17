@@ -1,5 +1,6 @@
 import io
 import csv
+from django.contrib.auth import logout
 from django.utils import timezone
 from django.http import HttpResponse
 from django.shortcuts import render,redirect, get_object_or_404
@@ -79,6 +80,12 @@ def login_view(request):
         form = AuthenticationForm()
 
     return render(request=request, template_name="auth/login.html", context={"login_form": form})
+
+
+def logout_view(request):
+    logout(request)
+    messages.info(request, "You have successfully logged out.")
+    return redirect('home')
 
 
 def home (request):
@@ -169,7 +176,7 @@ def create_message(request, customer_id):
     customer = get_object_or_404(CustomerInformation, pk=customer_id)
     available_templates = MessageTemplate.objects.all()
     messages = MessageSubmission.objects.all()
-
+    
     if request.method == 'POST':
         template_id = request.POST.get('template')
         if not template_id:

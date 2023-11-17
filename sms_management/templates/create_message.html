@@ -9,6 +9,7 @@
       {% csrf_token %}
       <label for="template">Template:</label>
       <select name="template" id="template">
+        <option value="">Pick One</option>
         {% for template in available_templates %}
           <option value="{{ template.id }}" data-content="{{ template.content }}">{{ template.name }}</option>
         {% endfor %}
