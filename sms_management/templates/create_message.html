@@ -19,34 +19,6 @@
       <input type="submit" value="Create Message">
     </form>
 </div>
-</br>
-<table>
-  <tr>
-    <th>SMS ID</th>
-    <th>Message</th>
-    <th>Mobile</th>
-    <th>Description</th>
-    <th>Create Date</th>
-    <th>Approval Status</th>
-    <th>Actions</th>
-  </tr>
-  {% for message in messages %}
-  <tr>
-    <td>{{ message.id }}</td>
-    <td>{{ message.edited_template }}</td> 
-    <td>{{ message.customer.contact }}</td>
-    <td>{{ message.template.issue_type }}</td>
-    <td>{{ message.submission_date }}</td>
-    <td>{{ message.status }}</td>
-    <td>
-      <a href="{% url 'approve_submission' message.id %}">Approve</a> |
-      <a href="{% url 'edit_submission' message.id %}">Edit</a> |
-      <a href="{% url 'delete_submission' message.id %}">Delete</a>
-    </td>
-  </tr>
-  {% endfor %}
-</table>
-
 
 <script>
   document.getElementById('template').addEventListener('change', function() {

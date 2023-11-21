@@ -4,8 +4,8 @@ from . import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', views.register_user, name='register_user'),
-    path('login/', views.login_view, name='login'),
+    path('register/', views.register_user, name='register_user'),
+    path('', views.login_view, name='login'),
     path('logout/', views.logout_view, name='logout'),
  
     path('home/', views.home, name='home'),
@@ -15,6 +15,7 @@ urlpatterns = [
     path('delete-template/<int:template_id>/', views.delete_template, name='delete_template'),
 
     path('create-message/<int:customer_id>/', views.create_message, name='create_message'),
+    path('all_submissions/', views.all_submissions, name='all_submissions'),
     path('approve-submission/<int:submission_id>/', views.approve_submission, name='approve_submission'),
     path('edit-submission/<int:submission_id>/', views.edit_submission, name='edit_submission'),
     path('delete-submission/<int:submission_id>/', views.delete_submission, name='delete_submission'),

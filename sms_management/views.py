@@ -175,7 +175,6 @@ def delete_template(request, template_id):
 def create_message(request, customer_id):
     customer = get_object_or_404(CustomerInformation, pk=customer_id)
     available_templates = MessageTemplate.objects.all()
-    messages = MessageSubmission.objects.all()
     
     if request.method == 'POST':
         template_id = request.POST.get('template')
@@ -188,9 +187,12 @@ def create_message(request, customer_id):
         # Create MessageSubmission instance
         submission, created = MessageSubmission.objects.get_or_create(
             template=template, user=request.user,customer=customer, edited_template=edited_template, defaults={'status': 'pending'})
+        
+        if created:
+            messages.success(request, 'Message created successfully.')
+            return redirect('all_submissions')
 
-    return render(request, 'create_message.html', {'customer': customer, 'available_templates': available_templates, 'messages':messages})
-
+    return render(request, 'create_message.html', {'customer': customer, 'available_templates': available_templates})
 
 @login_required
 def edit_submission(request, submission_id):
@@ -198,12 +200,16 @@ def edit_submission(request, submission_id):
     if request.method == 'POST':
         form = MessageSubmissionForm(request.POST, instance=submission)
         if form.is_valid():
+            submission.user = request.user
             form.save()
             messages.success(request, "Submission updated successfully.")
-            return redirect('create_message', customer_id=submission.customer.id)
+            return redirect('all_submissions')
+        else:
+            print(form.errors)
     else:
         form = MessageSubmissionForm(instance=submission)
-    return render(request, 'create_message.html', {'form': form})
+    return render(request, 'edit_submission.html', {'form': form})
+
 
 @login_required
 def delete_submission(request, submission_id):
@@ -211,8 +217,14 @@ def delete_submission(request, submission_id):
     if request.method == 'POST':
         submission.delete()
         messages.success(request, "Submission deleted successfully.")
-        return redirect('create_message', customer_id=submission.customer.id)
-    return render(request, 'create_message.html', {'submission': submission})
+        return redirect('all_submissions')
+    return render(request, 'all_submissions.html', {'submission': submission})
+
+
+@login_required
+def all_submissions(request):
+    messages = MessageSubmission.objects.all()
+    return render(request, 'all_submissions.html', {'messages': messages})
 
 @login_required
 @permission_required('can_approve_message', raise_exception=True)

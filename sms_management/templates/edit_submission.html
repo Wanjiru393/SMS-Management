@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container padd-15 mt-3">
+    <h4>Edit Submission</h4>
+    <br>
+    <form method="post">
+      {% csrf_token %}
+      <label for="template">Template:</label>
+      <select name="template" id="template">
+        {% for template in form.template.field.queryset %}
+          <option value="{{ template.pk }}" {% if template.pk == form.template.value %}selected{% endif %}>{{ template.name }}</option>
+        {% endfor %}
+      </select>
+      <label for="edited_template">Message:</label>
+      <textarea name="edited_template" id="edited_template" rows="5" cols="50">{{ form.edited_template.value }}</textarea>
+      <input type="submit" value="Update Submission">
+    </form>
+</div>
+{% endblock %}
