@@ -2,8 +2,9 @@
 {% load static %}
 
 {% block content %}
-  <h2>Register User</h2>
+  
   <form method="post">
+    <h2>Register User</h2>
     {% csrf_token %}
       {{ form.staff_number.label_tag }}
       {{ form.staff_number }}
@@ -24,6 +25,6 @@
       {{ form.password2 }}
       <br>
     <button type="submit">Register</button>
+    <p>Already have an account? <a href="{% url 'login' %}">Login here</a></p>
   </form>
-  <p>Already have an account? <a href="{% url 'login' %}">Login here</a></p>
 {% endblock %}
