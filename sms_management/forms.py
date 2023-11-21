@@ -32,6 +32,7 @@ from django.contrib.auth import get_user_model
 User = get_user_model()
 
 class MessageSubmissionForm(forms.ModelForm):
+    template = forms.ModelChoiceField(queryset=MessageTemplate.objects.all())
     edited_template = forms.CharField(widget=forms.Textarea)
 
     def __init__(self, *args, **kwargs):

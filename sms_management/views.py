@@ -197,17 +197,18 @@ def create_message(request, customer_id):
 @login_required
 def edit_submission(request, submission_id):
     submission = get_object_or_404(MessageSubmission, pk=submission_id)
+    
     if request.method == 'POST':
-        form = MessageSubmissionForm(request.POST, instance=submission)
+        form = MessageSubmissionForm(request.POST, instance=submission, user=request.user)
         if form.is_valid():
-            submission.user = request.user
             form.save()
             messages.success(request, "Submission updated successfully.")
             return redirect('all_submissions')
         else:
-            print(form.errors)
+            messages.error(request, "There was an error in the form.")
     else:
-        form = MessageSubmissionForm(instance=submission)
+        form = MessageSubmissionForm(instance=submission, user=request.user)
+
     return render(request, 'edit_submission.html', {'form': form})
 
 
