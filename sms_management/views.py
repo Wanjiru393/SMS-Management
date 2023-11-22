@@ -1,5 +1,6 @@
 import io
 import csv
+from django.db.models import Max
 from django.contrib.auth import logout
 from django.utils import timezone
 from django.http import HttpResponse
@@ -88,15 +89,29 @@ def logout_view(request):
     return redirect('home')
 
 
-def home (request):
+from django.db.models import Max
+
+def home(request):
     pending_count = MessageSubmission.objects.filter(status='pending').count()
     approved_count = MessageSubmission.objects.filter(status='approved').count()
+
+    # Get the latest approved messages for each customer
+    latest_approved_messages = BulkSMS.objects.filter(submission__status='approved') \
+        .values('submission__customer__id') \
+        .annotate(latest_submission_date=Max('submission__submission_date'))
+
+    # Fetch the details of the latest approved messages
+    approved_messages = BulkSMS.objects.filter(
+        submission__status='approved',
+        submission__submission_date__in=[obj['latest_submission_date'] for obj in latest_approved_messages]
+    ).order_by('-submission__submission_date')[:10]
 
     message_history = SentMessage.objects.all()
 
     context = {
         'pending_count': pending_count,
         'approved_count': approved_count,
+        'approved_messages': approved_messages,
         'message_history': message_history,
     }
 
@@ -237,9 +252,10 @@ def approve_submission(request, submission_id):
     bulk_sms = BulkSMS(
         messages=submission.template.content,
         mobile=submission.customer.contact,
-        user_id=approver.username,
+        user_id=approver,
         description=submission.issue,
-        create_date=timezone.now()
+        create_date=timezone.now(),
+        submission=submission,
     )
     bulk_sms.save()
 
@@ -254,3 +270,4 @@ def approve_submission(request, submission_id):
     # Update the status of the submission
     submission.status = 'approved'
     submission.save()
+    return redirect('home')

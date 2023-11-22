@@ -14,7 +14,7 @@
             <p>Approved Messages: {{ approved_count }}</p>
         </div>
         <div>
-            <h2>Message History</h2>
+            <h2>Approved Messages</h2>
             <table>
                 <thead>
                     <tr>
@@ -28,7 +28,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for message in message_history %}
+                    {% for message in approved_messages %}
                         <tr>
                             <td>{{ message.sms_id }}</td>
                             <td>{{ message.messages }}</td>
