@@ -12,7 +12,10 @@
             <th>Description</th>
             <th>Create Date</th>
             <th>Approval Status</th>
-            <th>Actions</th>
+            <th></th>
+            <th></th>
+            <th></th>
+
         </tr>
         {% for message in messages %}
         <tr>
@@ -23,8 +26,11 @@
             <td>{{ message.submission_date }}</td>
             <td>{{ message.status }}</td>
             <td>
-                <a href="{% url 'approve_submission' message.id %}">Approve</a> |
-                <a href="{% url 'edit_submission' message.id %}">Edit</a> |
+                <a href="{% url 'approve_submission' message.id %}">Approve</a>
+            <td>
+                <a href="{% url 'edit_submission' message.id %}">Edit</a>
+            </td>
+            <td>
                 <form action="{% url 'delete_submission' message.id %}" method="POST" style="display: inline;">
                     {% csrf_token %}
                     <input type="submit" value="Delete">

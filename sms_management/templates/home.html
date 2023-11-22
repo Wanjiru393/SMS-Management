@@ -8,12 +8,12 @@
 {% block content %}
 <div class="container padd-15">
     <div class="container padd-15">
-        <div>
+        <div class="approval-status">
             <h2>Approval Status</h2>
             <p><a href="{% url 'all_submissions' %}">Pending Messages: {{ pending_count }}</a></p>
             <p>Approved Messages: {{ approved_count }}</p>
         </div>
-        <div>
+        <div class="approved-messages">
             <h2>Approved Messages</h2>
             <table>
                 <thead>

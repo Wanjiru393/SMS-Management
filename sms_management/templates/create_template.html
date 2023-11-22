@@ -10,19 +10,21 @@
 {% if form %}
 <h2 class="form-heading">{% if form.instance.id %}Edit{% else %}Create{% endif %} Template</h2>
 
-<form method="post">
+<form method="post" class="form-horizontal">
     {% csrf_token %}
     {{ form.as_p }}
     <button type="submit" class="btn btn-primary">{% if form.instance.id %}Update{% else %}Create{% endif %} Template</button>
 </form>
 {% endif %}
 
-<table class="table">
+<table>
   <thead>
     <tr>
       <th>Issue Type</th>
       <th>Template</th>
-      <th>Actions</th>
+      <th>Action</th>
+      <th>Action</th>
+
     </tr>
   </thead>
   <tbody>
@@ -31,12 +33,15 @@
     <td>{{ template.issue_type }}</td>
     <td>{{ template.content }}</td>
     <td>
-      <a href="{% url 'edit_template' template.id %}">Edit</a> |
+      <a href="{% url 'edit_template' template.id %}">Edit</a>
+    </td>
+    <td>
       <form method="post" action="{% url 'delete_template' template.id %}" style="display: inline;">
         {% csrf_token %}
         <input type="submit" value="Delete">
       </form>
     </td>
+    
   </tr>
 {% empty %}
   <tr>

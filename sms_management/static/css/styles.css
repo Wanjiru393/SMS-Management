@@ -5,25 +5,52 @@
 }
 body {
     background: #F0EBE3;
-    margin-top: 5rem;
     height: 100vh;
+    margin-top: 10rem;
     font-family: Arial, sans-serif;
   }
 
   h1, h2, h3, h4, h5, h6 {
     color: #003366;
 }
-.navbar {
+/* Sidebar Styles */
+#sidebar {
+    position: fixed;
+    top: 0;
+    left: 11px;
+    height: 100vh;
+    margin-top: 9rem;
+    width: 230px;
+    padding-top: 20px;
     background-color: #003366;
+    border-right: 1px solid #ddd;
+}
+
+#sidebar ul.nav.flex-column {
+    padding-left: 15px;
+}
+
+#sidebar .nav-item {
+    margin-bottom: 10px;
+}
+
+#sidebar .nav-link {
     color: #fff;
 }
 
-.navbar-brand {
-    color: #fff;
+#sidebar .nav-link.active {
+    color:#003366 ;
+    background-color: #fff;
 }
 
-.navbar-toggler {
-    border-color: #fff;
+.navbar {
+    color:#003366;
+    background-color: #fff;
+    position: fixed;  
+    top: 0;           
+    width: 100%;     
+    z-index: 1000;
+    box-shadow: 0px 4px 2px -2px gray; 
 }
 
 .navbar-toggler-icon {
@@ -35,7 +62,7 @@ body {
 }
 
 .nav-link {
-    color: #fff;
+    color: #003366;
 }
 
 .nav-link:hover {
@@ -45,6 +72,7 @@ body {
 .nav-link.active {
     color: #ccc;
 }
+
 table {
     width: 100%;
     border-collapse: collapse;
@@ -61,6 +89,35 @@ th {
     background-color: #003366;
     color: #fff;
 }
+td a {
+    display: inline-block;
+    background-color: #003366;
+    color: #fff;
+    padding: 5px 10px;
+    border-radius: 5px;
+    text-decoration: none;
+}
+td a:hover {
+    background-color: #002244;
+}
+
+td form {
+    display: inline-block;
+    margin-right: 5px;
+}
+td form input[type="submit"] {
+    background-color: #003366;
+    color: #fff;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+td form input[type="submit"]:hover {
+    background-color: #002244;
+}
+
 .btn {
     background-color: #003366;
     color: #fff;
@@ -87,6 +144,7 @@ form {
 form h2 {
     text-align: center;
     margin-bottom: 20px;
+    color: #003366;
 }
 
 form input {
@@ -114,28 +172,19 @@ form button:hover {
 form p {
     text-align: center;
     margin-top: 10px;
+    color: #003366;
 }
 
 form a {
     color: #003366;
 }
-
-.footer {
-    background-color: #003366;
-    padding: 100px 0;
-    color: #fff;
-    text-align: center;
+.form-group {
+    margin-bottom: 15px;
 }
 
-.footer-row {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
+form label {
+    display: block;
+    margin-bottom: 5px;
+    color: #003366;
 }
 
-.footer-copyright {
-    text-align: center;
-    padding: 20px;
-    background-color: #002244;
-    color: #fff;
-}
