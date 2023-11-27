@@ -1,6 +1,5 @@
 import io
 import csv
-from django.db.models import Max
 from django.contrib.auth import logout
 from django.utils import timezone
 from django.http import HttpResponse
@@ -88,8 +87,6 @@ def logout_view(request):
     messages.info(request, "You have successfully logged out.")
     return redirect('home')
 
-
-from django.db.models import Max
 
 def home(request):
     pending_count = MessageSubmission.objects.filter(status='pending').count()
