@@ -28,17 +28,17 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for message in approved_messages %}
-                        <tr>
-                            <td>{{ message.sms_id }}</td>
-                            <td>{{ message.messages }}</td>
-                            <td>{{ message.mobile }}</td>
-                            <td>{{ message.create_date }}</td>
-                            <td>{{ message.date_sent }}</td>
-                            <td>{{ message.user_id }}</td>
-                            <td>{{ message.description }}</td>
-                        </tr>
-                    {% endfor %}
+                {% for bulk_sms in bulk_sms_list %}
+                    <tr>
+                        <td>{{ bulk_sms.sms_id }}</td>
+                        <td>{{ bulk_sms.messages }}</td>
+                        <td>{{ bulk_sms.mobile }}</td>
+                        <td>{{ bulk_sms.create_date }}</td>
+                        <td>{% if bulk_sms.date_sent %}{{ bulk_sms.date_sent }}{% else %}Not sent yet{% endif %}</td>
+                        <td>{{ bulk_sms.user_id }}</td>
+                        <td>{{ bulk_sms.description }}</td>
+                    </tr>
+                {% endfor %}
                 </tbody>
             </table>
         </div>

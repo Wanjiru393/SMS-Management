@@ -96,15 +96,14 @@ def home(request):
     pending_count = MessageSubmission.objects.filter(status='pending').count()
     approved_count = MessageSubmission.objects.filter(status='approved').count()
 
-    # Get all approved messages by submission date(latest first)
-    approved_messages = MessageSubmission.objects.filter(status='approved').order_by('-submission_date')
-        
+     # Get all approved BulkSMS instances by creation date(latest first)
+    bulk_sms_list = BulkSMS.objects.all().order_by('-create_date')
     message_history = SentMessage.objects.all()
 
     context = {
         'pending_count': pending_count,
         'approved_count': approved_count,
-        'approved_messages': approved_messages,
+         'bulk_sms_list': bulk_sms_list,
         'message_history': message_history,
     }
 
@@ -243,7 +242,7 @@ def send_sms(bulk_sms):
         if not recipient.startswith('+'):
             recipient = '+' + recipient
 
-        message = f"Your message has been approved. {bulk_sms.description}"
+        message = bulk_sms.messages
         
         africastalking_username = settings.AF_API_USERNAME
         africastalking_api_key = settings.AF_API_KEY
@@ -268,7 +267,7 @@ def approve_submission(request, submission_id):
 
     # Create a new BulkSMS instance
     bulk_sms = BulkSMS(
-        messages=submission.template.content,
+        messages=submission.edited_template,
         mobile=submission.customer.contact,
         user_id=approver,
         description=submission.issue,
