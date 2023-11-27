@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
-from .models import MessageTemplate, MessageSubmission
+from .models import MessageTemplate, MessageSubmission, UserProfile
 from django.contrib.auth.models import User
 
 class UserRegistrationForm(UserCreationForm):
@@ -18,6 +18,14 @@ class UserRegistrationForm(UserCreationForm):
         user.username = self.cleaned_data['staff_number']
         if commit:
             user.save()
+        
+        user_profile, created = UserProfile.objects.get_or_create(user=user)
+        user_profile.full_name = self.cleaned_data['full_name']
+        user_profile.staff_number = self.cleaned_data['staff_number']
+        user_profile.department = self.cleaned_data['department']
+        user_profile.station = self.cleaned_data['station']
+        user_profile.save()
+
         return user
     
 class CustomerInformationForm(forms.Form):

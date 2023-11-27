@@ -95,17 +95,9 @@ def home(request):
     pending_count = MessageSubmission.objects.filter(status='pending').count()
     approved_count = MessageSubmission.objects.filter(status='approved').count()
 
-    # Get the latest approved messages for each customer
-    latest_approved_messages = BulkSMS.objects.filter(submission__status='approved') \
-        .values('submission__customer__id') \
-        .annotate(latest_submission_date=Max('submission__submission_date'))
-
-    # Fetch the details of the latest approved messages
-    approved_messages = BulkSMS.objects.filter(
-        submission__status='approved',
-        submission__submission_date__in=[obj['latest_submission_date'] for obj in latest_approved_messages]
-    ).order_by('-submission__submission_date')[:10]
-
+    # Get all approved messages by submission date(latest first)
+    approved_messages = MessageSubmission.objects.filter(status='approved').order_by('-submission_date')
+        
     message_history = SentMessage.objects.all()
 
     context = {
