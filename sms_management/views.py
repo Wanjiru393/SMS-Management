@@ -9,8 +9,12 @@ from django.contrib import messages
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import permission_required, login_required
-from .models import CustomerInformation, MessageTemplate, MessageSubmission, BulkSMS, UserProfile, Approval, User, SentMessage
+from core import settings
+from .models import CustomerInformation, MessageTemplate, MessageSubmission, BulkSMS, UserProfile, Approval, User, SentMessage, send_sms
 from .forms import MessageSubmissionForm, UserRegistrationForm, CustomerInformationForm, MessageTemplateForm
+import africastalking
+from africastalking import SMS
+
 
 
 def assign_approval_role(request, user_id, approval_permission):
@@ -231,10 +235,35 @@ def all_submissions(request):
     messages = MessageSubmission.objects.all()
     return render(request, 'all_submissions.html', {'messages': messages})
 
+
+def send_sms(bulk_sms):
+    try:
+        recipient = bulk_sms.mobile
+
+        if not recipient.startswith('+'):
+            recipient = '+' + recipient
+
+        message = f"Your message has been approved. {bulk_sms.description}"
+        
+        africastalking_username = settings.AF_API_USERNAME
+        africastalking_api_key = settings.AF_API_KEY
+        print(f"Username: {africastalking_username}, API Key: {africastalking_api_key}")
+        africastalking.initialize(africastalking_username, africastalking_api_key)
+
+        sms = africastalking.SMS
+        response = sms.send(message, [recipient])
+        print(response)
+        return True
+    except Exception as e:
+        print(f"SMS sending failed: {e}")
+        return False
+
+
 @login_required
 @permission_required('can_approve_message', raise_exception=True)
 def approve_submission(request, submission_id):
     submission = get_object_or_404(MessageSubmission, pk=submission_id)
+    
     approver = request.user
 
     # Create a new BulkSMS instance
@@ -259,4 +288,8 @@ def approve_submission(request, submission_id):
     # Update the status of the submission
     submission.status = 'approved'
     submission.save()
+
+    # Send an SMS to the customer
+    send_sms(bulk_sms)
+
     return redirect('home')

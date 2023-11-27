@@ -91,3 +91,7 @@ STATIC_URL = 'static/'
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+AF_API_USERNAME = config('AF_API_USERNAME')
+AF_API_KEY = config('AF_API_KEY')
+
