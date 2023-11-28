@@ -9,6 +9,7 @@ from django.contrib import messages
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import permission_required, login_required
+import requests
 from core import settings
 from .models import CustomerInformation, MessageTemplate, MessageSubmission, BulkSMS, UserProfile, Approval, User, SentMessage, send_sms
 from .forms import MessageSubmissionForm, UserRegistrationForm, CustomerInformationForm, MessageTemplateForm
@@ -237,22 +238,28 @@ def all_submissions(request):
 
 def send_sms(bulk_sms):
     try:
-        recipient = bulk_sms.mobile
+         #request payload
+        payload = {
+            "messages": bulk_sms.messages,
+            "mobile": [bulk_sms.mobile],
+            "sms_ID": 0
+        }
 
-        if not recipient.startswith('+'):
-            recipient = '+' + recipient
+        api_endpoint = "http://smsapi.kplc.local:8080/api/send-sms"
+        # headers = {
+        #     "Content-Type": "application/json",
+        #     "Authorization": f"Bearer {settings.YOUR_API_TOKEN}"
+        # }
 
-        message = bulk_sms.messages
+        response = requests.post(api_endpoint, json=payload)
         
-        africastalking_username = settings.AF_API_USERNAME
-        africastalking_api_key = settings.AF_API_KEY
-        print(f"Username: {africastalking_username}, API Key: {africastalking_api_key}")
-        africastalking.initialize(africastalking_username, africastalking_api_key)
-
-        sms = africastalking.SMS
-        response = sms.send(message, [recipient])
-        print(response)
-        return True
+        #response
+        if response.status_code ==200:
+            print("SMS sent successfully.")
+            return True
+        else:
+            print(f"Failed to send SMS.Status code: {response.status_code}, Response: {response.text}")
+            return False            
     except Exception as e:
         print(f"SMS sending failed: {e}")
         return False
