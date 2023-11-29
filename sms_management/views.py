@@ -13,9 +13,6 @@ import requests
 from core import settings
 from .models import CustomerInformation, MessageTemplate, MessageSubmission, BulkSMS, UserProfile, Approval, User, SentMessage, send_sms
 from .forms import MessageSubmissionForm, UserRegistrationForm, CustomerInformationForm, MessageTemplateForm
-import africastalking
-from africastalking import SMS
-
 
 
 def assign_approval_role(request, user_id, approval_permission):

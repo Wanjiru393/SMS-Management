@@ -3,9 +3,6 @@ from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.core.exceptions import PermissionDenied
-import africastalking
-from africastalking import SMS
-from africastalking import Token
 from django.conf import settings
 
 class UserProfile(models.Model):
