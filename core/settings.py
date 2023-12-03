@@ -54,23 +54,23 @@ TEMPLATES = [
 WSGI_APPLICATION = 'core.wsgi.application'
 
 # Database
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.oracle',
-#         'NAME': 'your_oracle_database_name',
-#         'USER': 'your_oracle_username',
-#         'PASSWORD': 'your_oracle_password',
-#         'HOST': '',  
-#         'PORT': '',
-#     }
-# }
-
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.oracle',
+        'NAME': 'your_oracle_database_name',
+        'USER': 'your_oracle_username',
+        'PASSWORD': 'your_oracle_password',
+        'HOST': '',  
+        'PORT': '',
     }
 }
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
 
 
 # Password validation
@@ -103,7 +103,3 @@ STATIC_URL = 'static/'
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-AF_API_USERNAME = config('AF_API_USERNAME')
-AF_API_KEY = config('AF_API_KEY')
-
