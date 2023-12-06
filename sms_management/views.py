@@ -11,7 +11,7 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import permission_required, login_required
 import requests
 from core import settings
-from .models import CustomerInformation, MessageTemplate, MessageSubmission, BulkSMS, UserProfile, Approval, User, SentMessage, send_sms
+from .models import CustomerInformation, MessageTemplate, MessageSubmission, BulkSMS, UserProfile, Approval, User, SentMessage
 from .forms import MessageSubmissionForm, UserRegistrationForm, CustomerInformationForm, MessageTemplateForm
 
 
@@ -231,6 +231,8 @@ def delete_submission(request, submission_id):
 def all_submissions(request):
     messages = MessageSubmission.objects.all()
     return render(request, 'all_submissions.html', {'messages': messages})
+
+
 
 
 def send_sms(bulk_sms):

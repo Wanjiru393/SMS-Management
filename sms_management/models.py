@@ -62,6 +62,7 @@ class BulkSMS(models.Model):   #approved message that is ready to be sent
     class Meta:
         db_table = 'INCMS_INTER_ADMINIS.BULK_SMS'
 
+
 class Approval(models.Model):   #approval of a MessageSubmission.
     submission = models.ForeignKey(MessageSubmission, on_delete=models.CASCADE)
     approver = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -69,30 +70,6 @@ class Approval(models.Model):   #approval of a MessageSubmission.
 
     class Meta:
         verbose_name_plural = "Approvals"
-
-
-# Signal to send a message after approval
-@receiver(post_save, sender=Approval)
-def send_message_after_approval(sender, instance, **kwargs):
-    if instance.submission.status == 'approved':
-        recipient = instance.submission.customer.contact
-        message = f"Your message has been approved. {instance.submission.bulksms.description}"
-        send_sms(recipient, message)
-
-# Function to send an SMS
-def send_sms(recipient, message):
-    africastalking_username = settings.AF_API_USERNAME
-    africastalking_api_key = settings.AF_API_KEY
-    Africastalking.initialize(africastalking_username, africastalking_api_key)
-
-    sms = SMS
-    try:
-        response = sms.send(message, [recipient])
-        print(response)
-        return True
-    except Exception as e:
-        print(f"SMS sending failed: {e}")
-        return False
 
 class SentMessage(models.Model):   #a message that has been sent.
     sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name='sent_messages')
